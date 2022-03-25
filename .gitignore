@@ -8,6 +8,7 @@ yarn-error.log
 
 backend/build
 backend/dist
+backend/app
 backend/app.spec
 
 
