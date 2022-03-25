@@ -1,0 +1,10 @@
+/node_modules/
+/public/build/
+
+/.py_env
+/dist
+yarn-error.log
+.idea
+
+
+.DS_Store
