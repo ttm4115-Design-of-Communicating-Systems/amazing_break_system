@@ -45,6 +45,7 @@
 	<button on:click={test_f}>axios_test</button>
 	<button on:click={websocket_test}>start websocket test</button>
 	<h3>server answer: {res}</h3>
+
 	<h2>web socket qa log: {websocket_qa}</h2>
 </main>
 
@@ -55,7 +56,15 @@
 		max-width: 240px;
 		margin: 0 auto;
 	}
+	h2{
+		word-wrap: break-word;
+		width: 100%;
+	}
 
+	h3{
+		word-wrap: break-word;
+		width: 100%;
+	}
 	h1 {
 		color: #ff3e00;
 		text-transform: uppercase;
