@@ -21,7 +21,7 @@
     "start": "sirv public --no-clear",
     "electron": "wait-on http://localhost:5000 && electron .",
     "electron-dev": "concurrently \"yarn run dev\" \"yarn run electron\"",
-    "electron-dev-with-flask": "concurrently \"yarn run dev\" \"yarn run electron\" \"./start_dev_backend.sh\"",
+    "electron-dev-with-flask": "concurrently \"./start_dev_backend.sh\" \"yarn run dev\" \"yarn run electron\" ",
     "package_flask": "./venv/bin/pyinstaller -F -y --clean  --specpath ./backend --workpath ./backend --distpath ./backend/dist ./backend/app.py",
     "preelectron-pack": "yarn run build && yarn run package_flask",
     "electron-pack": "electron-builder"
@@ -43,6 +43,7 @@
   "dependencies": {
     "axios": "^0.26.1",
     "electron-serve": "^1.1.0",
-    "sirv-cli": "^2.0.2"
+    "sirv-cli": "^2.0.2",
+    "socket.io-client": "^4.4.1"
   }
 }

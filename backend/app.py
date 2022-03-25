@@ -1,8 +1,13 @@
+import time
+
 import flask
 from flask import Flask, Response
+from flask_cors import CORS
+from flask_socketio import send, SocketIO, emit
 
 app = Flask(__name__)
-
+cors = CORS(app,resources={r"/*":{"origins":"*"}})
+socketio = SocketIO(app ,cors_allowed_origins="*")
 
 @app.route('/', methods=['HEAD'])
 def head():
@@ -16,5 +21,14 @@ def hello():
     response.headers.add('Access-Control-Allow-Origin', '*')
     return response
 
+@socketio.on('message', namespace="/ws_test")
+def handle_message(data):
+    print(f'received message: {data}')
+    time.sleep(0.5)
+    emit('message','{"data": "pong"}')
+    print(f'sent resp:')
+
+
+
 if __name__ == '__main__':
-    app.run(host='127.0.0.1', port=5000)
+    socketio.run(app, host='127.0.0.1', port=5000)
