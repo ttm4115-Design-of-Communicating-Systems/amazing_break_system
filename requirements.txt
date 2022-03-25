@@ -1,0 +1,9 @@
+altgraph==0.17.2
+click==8.0.4
+Flask==2.0.3
+itsdangerous==2.1.2
+Jinja2==3.1.0
+MarkupSafe==2.1.1
+pyinstaller==4.10
+pyinstaller-hooks-contrib==2022.3
+Werkzeug==2.0.3

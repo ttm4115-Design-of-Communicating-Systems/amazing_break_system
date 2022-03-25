@@ -8,6 +8,7 @@ const loadURL = serve({directory: 'public'});
 // be closed automatically when the JavaScript object is garbage collected.
 let mainWindow;
 
+let server_process;
 function isDev() {
     return !app.isPackaged;
 }
@@ -30,14 +31,14 @@ function createWindow() {
 
     // This block of code is intended for development purpose only.
     // Delete this entire block of code when you are ready to package the application.
-    if (isDev()) {
-        mainWindow.loadURL('http://localhost:5000/');
-    } else {
-        loadURL(mainWindow);
-    }
+    // if (isDev()) {
+    //     mainWindow.loadURL('http://localhost:5000/');
+    // } else {
+    //     loadURL(mainWindow);
+    // }
 
     // Uncomment the following line of code when app is ready to be packaged.
-    // loadURL(mainWindow);
+    loadURL(mainWindow);
 
     // Open the DevTools and also disable Electron Security Warning.
     // process.env['ELECTRON_DISABLE_SECURITY_WARNINGS'] = true;
@@ -58,26 +59,28 @@ function createWindow() {
     });
 
     // python stuff
-    var python = require('child_process').spawn('./.py_env/bin/python3', ['./backend/app.py']);
-    python.stdout.on('data', function (data) {
+    server_process = require('child_process').spawn('./backend/dist/app');
+    server_process.stdout.on('data', function (data) {
         console.log("data: ", data.toString('utf8'));
     });
-    python.stderr.on('data', (data) => {
+    server_process.stderr.on('data', (data) => {
         console.log(`stderr: ${data}`); // when error
     });
-    console.log(python)
 }
 
 // This method will be called when Electron has finished
 // initialization and is ready to create browser windows.
 // Some APIs can only be used after this event occurs.
-app.on('ready', createWindow);
+app.on('ready',
+    createWindow
+);
 
 // Quit when all windows are closed.
 app.on('window-all-closed', function () {
     // On macOS it is common for applications and their menu bar
     // to stay active until the user quits explicitly with Cmd + Q
     if (process.platform !== 'darwin') app.quit()
+    server_process.kill()
 });
 
 app.on('activate', function () {
@@ -90,20 +93,3 @@ app.on('activate', function () {
 
 
 
-
-let backend;
-backend = path.join(process.cwd(), 'resources/backend/dist/app.exe')
-var execfile = require('child_process').execFile;
-execfile(
-    backend,
-    {
-        windowsHide: true,
-    }, (err, stdout, stderr) => {  if (err) {
-        console.log(err);
-    }  if (stdout) {
-        console.log(stdout);
-    }  if (stderr) {
-        console.log(stderr);
-    }
-    }
-)

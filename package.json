@@ -8,6 +8,7 @@
     "productName": "The Amazing Brake System",
     "files": [
       "public/**/*",
+      "backend/dist/*",
       "main.js"
     ],
     "win": {},
@@ -20,7 +21,9 @@
     "start": "sirv public --no-clear",
     "electron": "wait-on http://localhost:5000 && electron .",
     "electron-dev": "concurrently \"yarn run dev\" \"yarn run electron\"",
-    "preelectron-pack": "yarn run build",
+    "electron-dev-with-flask": "concurrently \"yarn run dev\" \"yarn run electron\" \"./start_dev_backend.sh\"",
+    "package_flask": "./venv/bin/pyinstaller -F -y --clean  --specpath ./backend --workpath ./backend --distpath ./backend/dist ./backend/app.py",
+    "preelectron-pack": "yarn run build && yarn run package_flask",
     "electron-pack": "electron-builder"
   },
   "devDependencies": {
