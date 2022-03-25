@@ -5,7 +5,7 @@
 
 	let res = "Answer goes here"
 	async function test_f() {
-		axios.get('http://127.0.0.1:5000/test')
+		axios.get('http://127.0.0.1:5000/')
 				.then(function (response) {
 					res = response.data.mutch
 					console.log("resp: ", response.data);

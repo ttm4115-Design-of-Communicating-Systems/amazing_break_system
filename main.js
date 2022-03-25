@@ -31,14 +31,14 @@ function createWindow() {
 
     // This block of code is intended for development purpose only.
     // Delete this entire block of code when you are ready to package the application.
-    // if (isDev()) {
-    //     mainWindow.loadURL('http://localhost:5000/');
-    // } else {
-    //     loadURL(mainWindow);
-    // }
+    if (isDev()) {
+        mainWindow.loadURL('http://localhost:5000/');
+    } else {
+        loadURL(mainWindow);
+    }
 
     // Uncomment the following line of code when app is ready to be packaged.
-    loadURL(mainWindow);
+    // loadURL(mainWindow);
 
     // Open the DevTools and also disable Electron Security Warning.
     // process.env['ELECTRON_DISABLE_SECURITY_WARNINGS'] = true;
@@ -59,13 +59,17 @@ function createWindow() {
     });
 
     // python stuff
-    server_process = require('child_process').spawn('./backend/dist/app');
-    server_process.stdout.on('data', function (data) {
-        console.log("data: ", data.toString('utf8'));
-    });
-    server_process.stderr.on('data', (data) => {
-        console.log(`stderr: ${data}`); // when error
-    });
+
+    if (! isDev()) {
+        server_process = require('child_process').spawn('./backend/dist/app');
+        server_process.stdout.on('data', function (data) {
+            console.log("data: ", data.toString('utf8'));
+        });
+        server_process.stderr.on('data', (data) => {
+            console.log(`stderr: ${data}`); // when error
+        });
+    }
+
 }
 
 // This method will be called when Electron has finished
