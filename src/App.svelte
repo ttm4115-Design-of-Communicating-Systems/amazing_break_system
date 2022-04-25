@@ -37,6 +37,17 @@
 			})()
 		})
 	}
+
+	let signSocket;
+	async function signaling_test(){
+		signSocket = io("ws://127.0.0.1:9999")
+		signSocket.on("connect", ()=> {
+			signSocket.emit("message", JSON.stringify({type: "login", name: "testing"}));
+		})
+		signSocket.on("message",(event)=>{
+			console.log("From server: " + event)
+		})
+	}
 </script>
 
 <main>
@@ -44,6 +55,7 @@
 	<p>Visit the <a href="https://svelte.dev/tutorial">Svelte tutorial</a> to learn how to build Svelte apps.</p>
 	<button on:click={test_f}>axios_test</button>
 	<button on:click={websocket_test}>start websocket test</button>
+	<button on:click={signaling_test}>start signaling test (see console)</button>
 	<h3>server answer: {res}</h3>
 
 	<h2>web socket qa log: {websocket_qa}</h2>
