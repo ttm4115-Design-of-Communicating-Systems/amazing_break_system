@@ -1,1 +1,1 @@
-console.log('Hello from preload.js file!');
+console.log("Hello from preload.js file!");
