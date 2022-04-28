@@ -55,6 +55,7 @@
 			localVideo.srcObject = localStream;
 			localVideo.play();
 		} catch (e) {
+			alert("no webcam dectected")
 			console.log(e)
 		}
 		signSocket = io("ws://127.0.0.1:9999")
