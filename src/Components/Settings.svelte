@@ -37,6 +37,7 @@
 				websocket_qa = websocket_qa;
 			})()
 		})
+		socket.on('close', () => console.log('disconnected'));
 	}
 
 	export let wt  //work time

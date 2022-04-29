@@ -8,20 +8,15 @@
 	import Office from "./Components/Office.svelte"
 	export let backend;
 
-	let status = "setup"
+	let status = "standby"
 
 
 </script>
-
-<nav>
-	<a href="#/">Home</a>
-	<a href="#/office">Office</a>
-</nav>
   
 {#if $url.hash === '' || $url.hash === '#/'}
-<Home backend={backend}/>
+	<Home backend={backend} status={status}/>
 {:else if $url.hash === '#/office'}
-<Office backend={backend} status={status}/>
+	<Office backend={backend} status={status}/>
 {:else}
-<h1>404</h1>
+	<h1>404</h1>
 {/if}
