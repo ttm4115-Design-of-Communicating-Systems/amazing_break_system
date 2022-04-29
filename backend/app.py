@@ -56,8 +56,8 @@ class CustomNamespace(Namespace):
         print("user connected", data)
         pass
 
-    def on_disconnect(self, data):
-        print("user disconnected", data)
+    def on_disconnect(self):
+        print("user disconnected")
 
     def on_message(self, data):
         print(data)
