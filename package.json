@@ -22,7 +22,7 @@
     "electron": "wait-on http://localhost:5000 && electron .",
     "electron-dev": "concurrently \"yarn run dev\" \"yarn run electron\"",
     "electron-dev-with-flask": "concurrently \"./start_dev_backend.sh\" \"yarn run dev\" \"yarn run electron\" ",
-    "package_flask": "./venv/bin/pyinstaller -F -y --clean  --specpath ./backend --workpath ./backend --distpath ./backend/dist ./backend/app.py",
+    "package_flask": "./venv/bin/pyinstaller -F -y --clean  --specpath ./backend --workpath ./backend --distpath ./backend/dist --hidden-import='engineio.async_drivers.threading' ./backend/app.py",
     "preelectron-pack": "yarn run build && yarn run package_flask",
     "electron-pack": "electron-builder"
   },
