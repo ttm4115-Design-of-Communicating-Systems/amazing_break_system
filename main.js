@@ -9,11 +9,20 @@ const loadURL = serve({directory: 'public'});
 let mainWindow;
 
 let server_process;
+
+const { protocol } = require('electron')
+
+protocol.registerSchemesAsPrivileged([
+    { scheme: 'blalbalb', privileges: { bypassCSP: true,stream: true, secure: true } }
+])
+
 function isDev() {
+
     return !app.isPackaged;
 }
 
 function createWindow() {
+
 
     // Create the browser window.
     mainWindow = new BrowserWindow({

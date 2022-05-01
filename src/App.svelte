@@ -51,6 +51,7 @@
 
 	async function setup_signaling(){
 		try {
+
 			localStream = await navigator.mediaDevices.getUserMedia({audio: true, video: true});
 			localVideo.srcObject = localStream;
 			localVideo.play();
