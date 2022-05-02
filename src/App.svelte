@@ -19,7 +19,6 @@
 
 {#if $url.hash === '' || $url.hash === '#/'}
 	<Home backend={backend} status={status}/>
-	<Meeting uid={uid} signalingBackend={signalingBackend}/>
 {:else if $url.hash === '#/office'}
 	<Office backend={backend} status={status} signalingBackend={signalingBackend}/>
 {:else}
