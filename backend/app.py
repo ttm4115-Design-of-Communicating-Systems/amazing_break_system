@@ -49,16 +49,16 @@ def get_state():
     flag = obj.flag
     return flask.jsonify({
         'state': flag, 
-        'wt': obj.worktime, # / 60000, 
-        'bt': obj.breaktime # / 60000
+        'wt': obj.worktime / 60000, 
+        'bt': obj.breaktime / 60000
     })
 
 class StmpyObj:
     def __init__(self) -> None:
         self.stm: Machine | None = None
         self.flag = "STANDBY"
-        self.worktime = 5000
-        self.breaktime = 5000
+        self.worktime = 1*60000
+        self.breaktime = 1*60000
         self.waittime = 1 # not in use
     
     def on_message(self, msg, wt=25*60000, bt=5*60000):
@@ -78,8 +78,8 @@ class StmpyObj:
             elif msg == 'accept_meeting':
                 self.stm.send('accept_meeting')
             elif msg == 'update_dur':
-                self.worktime = wt
-                self.breaktime = bt
+                self.worktime = wt * 60000
+                self.breaktime = bt * 60000
             else:
                 print("NO ACTION DEFINED FOR MESSAGE:", msg)
         except KeyError:
