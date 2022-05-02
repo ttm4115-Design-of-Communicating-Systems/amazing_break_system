@@ -156,7 +156,7 @@
 	setup_signaling();
 </script>
 
-<main>
+<!-- <main>
 	<h1>Hello {name}!</h1>
 	<p>Visit the <a href="https://svelte.dev/tutorial">Svelte tutorial</a> to learn how to build Svelte apps.</p>
 	<button on:click={test_f}>axios_test</button>
@@ -171,7 +171,7 @@
 		<video bind:this={localVideo} />
 		<video bind:this={remoteVideo} />
 	</div>
-</main>
+</main> -->
   
 {#if $url.hash === '' || $url.hash === '#/'}
 	<Home backend={backend} status={status}/>
