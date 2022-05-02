@@ -47,6 +47,9 @@
 				case 'candidate':
 					handleCandidate(data);
 					break;
+				case 'leave':
+					hangup();
+					break;
 
 				default:
 				console.log('unhandled', data);
@@ -94,6 +97,7 @@
 	}
 
 	async function handleAnswer(answer) {
+		remoteId = answer.name;
 		if (!pc) {
 			console.error('no peerconnection');
 			return;
@@ -114,6 +118,20 @@
 		}
 	}
 
+	async function hangup() {
+		if (pc) {
+			pc.close();
+			pc = null;
+		}
+		localStream.getTracks().forEach(track => track.stop());
+	};
+
+	function send_hangup() {
+		console.log("Hangup", remoteId);
+		localStream.getTracks().forEach(track => track.stop());
+		signSocket.emit("message", JSON.stringify({type: "leave", name: remoteId}));
+	}
+
 	setup_signaling();
 </script>
 <main>
@@ -125,6 +143,7 @@
 		<video bind:this={localVideo} />
 		<video bind:this={remoteVideo} />
 	</div>
+	<button on:click={send_hangup}>hangup</button>
 </main>
 
 <style>

@@ -21,7 +21,7 @@
 	<Home backend={backend} status={status}/>
 	<Meeting uid={uid} signalingBackend={signalingBackend}/>
 {:else if $url.hash === '#/office'}
-	<Office backend={backend} status={status}/>
+	<Office backend={backend} status={status} signalingBackend={signalingBackend}/>
 {:else}
 	<h1>404</h1>
 {/if}
