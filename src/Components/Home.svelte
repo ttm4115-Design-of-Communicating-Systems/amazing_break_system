@@ -7,6 +7,7 @@
     import Working from "./Working.svelte"
     import MeetingNotify from "./MeetingNotify.svelte"
     import Meeting from "./Meeting.svelte"
+    import Navbar from "./Navbar.svelte"
 	export let backend;
     export let status
 
@@ -19,7 +20,7 @@
 
     async function start_working(){
         status="user_working"
-		socket = io(`ws://${backend}/ws_test`) //TODO: update backend adress
+		socket = io(`ws://${backend}/ws_test`)
 		socket.on("connect", ()=> {
 			socket.emit("message", {data: {status: "click_start_timer", wt: wt, bt:bt}})
 			websocket_qa.push("ping")
@@ -35,6 +36,9 @@
             }
             if(resp_obj.data.status && resp_obj.data.status == "back_to_work"){
                 back_to_work()
+            }
+            if(resp_obj.data.status && resp_obj.data.status == ""){
+                //TODO: recieved ID? connect?, hoow?
             }
 		})
         socket.on('close', () => console.log('disconnected'));
@@ -68,10 +72,7 @@
 
 <main>
     {#if status == "standby"}
-        <nav>
-            <a href="#/">Home</a>
-            <a href="#/office">Office</a>
-        </nav>
+        <Navbar/>
 	    <Settings backend={backend} start_working={start_working} wt={wt} bt={bt}/>
     {:else if status=="user_working"}
         <Working wt={wt} stop_working={stop_working} meeting_notify={meeting_notify}/>

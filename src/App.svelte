@@ -17,10 +17,6 @@
 
 </script>
 
-<main>
-	<h1>Hello {name}!</h1>
-</main>
-
 {#if $url.hash === '' || $url.hash === '#/'}
 	<Home backend={backend} status={status}/>
 	<Meeting uid={uid} signalingBackend={signalingBackend}/>
