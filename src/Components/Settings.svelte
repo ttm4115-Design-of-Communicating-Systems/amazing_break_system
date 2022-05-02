@@ -1,5 +1,5 @@
 <script>
-	export let backend;
+	export let update_durations;
 	export let start_working
 
 
@@ -33,6 +33,7 @@
 
 	Work time: <input type="number" use:wtvalidator={wt} bind:value={wt} min=1> <br/>
 	Break time: <input type="number" use:btvalidator={bt} bind:value={bt} min=1> <br/>
+  <button on:click={() => update_durations(wt, bt)}>Update durations</button>
 
 	<br/>
 	<button on:click={start_working}>Start working</button>

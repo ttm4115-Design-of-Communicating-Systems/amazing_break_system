@@ -4,12 +4,9 @@
   import Working from "./Working.svelte"
   import MeetingNotify from "./MeetingNotify.svelte"
   import Meeting from "./Meeting.svelte"
-	
-  export let backend;
 
-  //TODO: save in local storage
-  let wt = 25 //work time
-  let bt = 10 //break time
+  let wt = 0
+  let bt = 0
 
   const URL = "http://127.0.0.1:5000"
   let state = "LOADING"
@@ -18,7 +15,10 @@
     setInterval(async () => {
       try {
         const res = await axios.get(`${URL}/state`)
+        console.log(res.data)
         state = res.data.state
+        wt = parseInt(res.data.wt)
+        bt = parseInt(res.data.bt )
       } catch {
         console.error(`POLL FAILED AT ${Date.now()}`)
         state = "NETWORK ISSUES"
@@ -26,10 +26,11 @@
     }, 1000);
   }
 
-  async function post_event(msg) {
+  async function post_event(msg, wt=null, bt=null) {
     try {
       await axios.post(`${URL}/post`, {
-        message: msg
+        message: msg,
+        wt, bt
       })
     } catch {
       console.error("COULD NOT POST EVENT")
@@ -48,15 +49,14 @@
         <a href="#/office">Office</a>
     </nav>
     <Settings 
-      backend={backend} 
-      start_working={() => post_event('click_start_timer')} 
-      wt={wt} 
+      wt={wt}
       bt={bt}
+      start_working={() => post_event('click_start_timer')} 
+      update_durations={(wt, bt) => post_event('update_dur', wt, bt)}
     />
   
   {:else if state == "WORKING"}
     <Working 
-      wt={wt} 
       stop_working={() => post_event('click_abort')} 
     />
   

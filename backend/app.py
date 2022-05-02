@@ -31,9 +31,13 @@ def update():
         return; 
 
     message = request.json['message']
+    wt = request.json['wt']
+    bt = request.json['bt']
     print("MESSAGE RECEIVED:", message)
+    print("wt RECEIVED:", wt)
+    print("bt RECEIVED:", bt)
 
-    obj.on_message(message)
+    obj.on_message(message, wt, bt)
 
     
     response = flask.jsonify({})
@@ -43,14 +47,21 @@ def update():
 @app.route('/state', methods=["GET"])
 def get_state():
     flag = obj.flag
-    return flask.jsonify({'state': flag})
+    return flask.jsonify({
+        'state': flag, 
+        'wt': obj.worktime, # / 60000, 
+        'bt': obj.breaktime # / 60000
+    })
 
 class StmpyObj:
     def __init__(self) -> None:
         self.stm: Machine | None = None
         self.flag = "STANDBY"
+        self.worktime = 5000
+        self.breaktime = 5000
+        self.waittime = 1 # not in use
     
-    def on_message(self, msg):
+    def on_message(self, msg, wt=25*60000, bt=5*60000):
         try:
             print("STM RECVD MSG", msg)
             
@@ -66,6 +77,9 @@ class StmpyObj:
                 self.stm.send('dont_pause')
             elif msg == 'accept_meeting':
                 self.stm.send('accept_meeting')
+            elif msg == 'update_dur':
+                self.worktime = wt
+                self.breaktime = bt
             else:
                 print("NO ACTION DEFINED FOR MESSAGE:", msg)
         except KeyError:
@@ -73,6 +87,23 @@ class StmpyObj:
     
     def set_flag(self, flag):
         self.flag = flag
+    
+    def do_start_timer(self, name, duration=None):
+        if not self.stm:
+            return
+
+        if duration:
+            self.stm.start_timer(name, duration)
+            return
+        
+        if name == "work_timer":
+            self.stm.start_timer(name, self.worktime)
+        elif name == "meeting_timer":
+            self.stm.start_timer(name, self.breaktime)
+        elif name == "timeout":
+            self.stm.start_timer(name, self.waittime)
+        else:
+            print("INVALID TIMER")
 
 ts = [{
         "source": "initial",
@@ -120,13 +151,13 @@ ss = [{
         "entry": "set_flag('STANDBY')"
     }, {
         "name": "s_working",
-        "entry": "set_flag('WORKING'); start_timer('work_timer', 5000)"
+        "entry": "set_flag('WORKING'); do_start_timer('work_timer')"
     }, {
         "name": "s_neg_connection",
-        "entry": "set_flag('SEARCHING'); start_timer('timeout', 5000)"
+        "entry": "set_flag('SEARCHING'); do_start_timer('timeout')"
     }, {
         "name": "s_meeting",
-        "entry": "set_flag('MEETING'); start_timer('meeting_timer', 5000)"
+        "entry": "set_flag('MEETING'); do_start_timer('meeting_timer')"
     }]
 
 obj = StmpyObj()
