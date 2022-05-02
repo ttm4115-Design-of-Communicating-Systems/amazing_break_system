@@ -18,7 +18,7 @@
 </script>
 
 {#if $url.hash === '' || $url.hash === '#/'}
-	<Home backend={backend} status={status}/>
+	<Home backend={backend} status={status} signalingBackend={signalingBackend}/>
 {:else if $url.hash === '#/office'}
 	<Office backend={backend} status={status} signalingBackend={signalingBackend}/>
 {:else}

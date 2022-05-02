@@ -4,7 +4,11 @@
   import Working from "./Working.svelte"
   import MeetingNotify from "./MeetingNotify.svelte"
   import Meeting from "./Meeting.svelte"
+  import { v4 as uuidv4 } from 'uuid';
 
+  export let signalingBackend;
+
+  let uid = uuidv4();
   let wt = 0
   let bt = 0
 
@@ -71,7 +75,7 @@
     <p>Will time out after 5 seconds</p>
 
   {:else if state == "MEETING"}
-      <Meeting/>
+      <Meeting uid={uid} signalingBackend={signalingBackend}/>
   {/if}
 </main>
 
