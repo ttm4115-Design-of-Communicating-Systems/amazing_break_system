@@ -4,7 +4,7 @@
 
 This is the front-end component of the Amazing brake system. This revolutionary mind-blowingly amazing system is capable of facilitating connecting between people all across the world, and totally exterminating the loneliness of the home office humans. 
 
-To build this legendary system you firstly need to install all the python dependencys, "why are there python dependency in a svelte electron app?",  i hear you say. That is because we have packaged a flask server in to the electron app. While we acknowledge this is a stupid bad solution, we have also observers that using python in weird places where it does not belong is the modus operandi of the software industry today. So if big companies does it we will follow the proud tradition in the computer industry and blindly follow. getting back on track. The compile flask to executable pre package step needs the a python env with all the depencys insalled named ``venv`` so to install run:
+To build this legendary system you firstly need to install all the python dependencys, "why are there python dependency in a svelte electron app?",  i hear you say. That is because we have packaged a flask server in to the electron app. While we acknowledge this is a unconventional and not necessarily good solution, we have also observers that using python in weird places where it does not belong is the modus operandi of the software industry today. So if big companies does it we will follow the proud tradition in the computer industry and blindly follow. getting back on track. The compile flask to executable pre package step needs the a python env with all the depencys insalled named ``venv`` so to install run:
 ```bash
 python3 -m venv venv
 ./venv/bin/pip install -r ./requirements.txt 
