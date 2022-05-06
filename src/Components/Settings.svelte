@@ -1,44 +1,7 @@
 <script>
-	import axios from "axios";
-	import { onMount } from "svelte";
-	import async from "async";
-	import { io, Manager } from "socket.io-client";
-	export let backend;
+	export let update_durations;
 	export let start_working
 
-	let res = ""
-	async function test_f() {
-		axios.get(`http://${backend}/`)
-				.then(function (response) {
-					res += response.data.mutch
-					console.log("resp: ", response.data);
-				})
-				.catch(function (error) {
-					console.log(error);
-				});
-	}
-	let websocket_qa = []
-	let socket;
-	async function websocket_test(){
-		socket = io(`ws://${backend}/ws_test`)
-		socket.on("connect", ()=> {
-			socket.emit("message", {data: "ping"})
-			websocket_qa.push("ping")
-			websocket_qa = websocket_qa
-		})
-		socket.on("message",(event)=>{
-			let resp_obj = JSON.parse(event)
-			websocket_qa.push(resp_obj.data);
-			websocket_qa = websocket_qa;
-			(async () => {
-				await new Promise(resolve => setTimeout(resolve, 500));
-				socket.emit("message", {data: "ping"});
-				websocket_qa.push("ping");
-				websocket_qa = websocket_qa;
-			})()
-		})
-		socket.on('close', () => console.log('disconnected'));
-	}
 
 	export let wt  //work time
 	export let bt  //break time
@@ -70,16 +33,10 @@
 
 	Work time: <input type="number" use:wtvalidator={wt} bind:value={wt} min=1> <br/>
 	Break time: <input type="number" use:btvalidator={bt} bind:value={bt} min=1> <br/>
+  <button on:click={() => update_durations(wt, bt)}>Update durations</button>
 
 	<br/>
 	<button on:click={start_working}>Start working</button>
-	<br/><br/>
-	
-	<button on:click={test_f}>axios_test</button>
-	<button on:click={websocket_test}>start websocket test</button>
-	<h3>server answer: {res}</h3>
-
-	<h2>web socket qa log: {websocket_qa}</h2>
 </main>
 
 <style>

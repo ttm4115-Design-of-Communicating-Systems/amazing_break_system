@@ -1,14 +1,15 @@
-import time
 
+from urllib import response
 import flask
-from flask import Flask, Response
-from flask_cors import CORS
-from flask_socketio import send, SocketIO, emit, Namespace
+from flask import Flask, Response, request
+from flask_cors import CORS, cross_origin
+
+from stmpy import Machine, Driver
 
 
 app = Flask(__name__)
 cors = CORS(app, resources={r"/*": {"origins": "*"}})
-socketio = SocketIO(app, cors_allowed_origins="*")
+app.config['CORS_HEADERS'] = 'Content-Type'
 
 
 @app.route("/", methods=["HEAD"])
@@ -24,69 +25,149 @@ def hello():
     response.headers.add("Access-Control-Allow-Origin", "*")
     return response
 
-class STMPYHomeOfficeResponses:
-    def __init__(self):
-        pass
+@app.route("/post", methods=["POST"])
+def update():
+    if not request.json:
+        print("INVALID MESSAGE")
+        return; 
 
-    def timer_done(self):
-        pass
+    message = request.json['message']
+    wt = request.json['wt']
+    bt = request.json['bt']
+    print("MESSAGE RECEIVED:", message)
+    print("wt RECEIVED:", wt)
+    print("bt RECEIVED:", bt)
 
-#
-#  STM HOME OFFICE STMPY responses
-#
-def pause_timer_done():
-    pass
+    obj.on_message(message, wt, bt)
 
-def connection_issues():
-    pass
+    
+    response = flask.jsonify({})
+    response.headers.add("Access-Control-Allow-Origin", "*")
+    return response
 
-def meeting_match_response():
-    pass
+@app.route('/state', methods=["GET"])
+def get_state():
+    flag = obj.flag
+    return flask.jsonify({
+        'state': flag, 
+        'wt': obj.worktime / 60000, 
+        'bt': obj.breaktime / 60000
+    })
 
-def meeting_timer_done():
-    pass
+class StmpyObj:
+    def __init__(self) -> None:
+        self.stm: Machine | None = None
+        self.flag = "STANDBY"
+        self.worktime = 1*60000
+        self.breaktime = 1*60000
+        self.waittime = 1 # not in use
+    
+    def on_message(self, msg, wt=25*60000, bt=5*60000):
+        try:
+            print("STM RECVD MSG", msg)
+            
+            if (self.stm == None):
+                print("MACHINE NOT SET UP")
+                return
+            
+            if msg == 'click_start_timer':
+                self.stm.send('start_work')
+            elif msg == 'click_abort':
+                self.stm.send('abort')
+            elif msg == 'dont_pause':
+                self.stm.send('dont_pause')
+            elif msg == 'accept_meeting':
+                self.stm.send('accept_meeting')
+            elif msg == 'update_dur':
+                self.worktime = wt * 60000
+                self.breaktime = bt * 60000
+            else:
+                print("NO ACTION DEFINED FOR MESSAGE:", msg)
+        except KeyError:
+            print("RECEIVED MALFORMED MESSAGE")
+    
+    def set_flag(self, flag):
+        self.flag = flag
+    
+    def do_start_timer(self, name, duration=None):
+        if not self.stm:
+            return
 
+        if duration:
+            self.stm.start_timer(name, duration)
+            return
+        
+        if name == "work_timer":
+            self.stm.start_timer(name, self.worktime)
+        elif name == "meeting_timer":
+            self.stm.start_timer(name, self.breaktime)
+        elif name == "timeout":
+            self.stm.start_timer(name, self.waittime)
+        else:
+            print("INVALID TIMER")
 
+ts = [{
+        "source": "initial",
+        "target": "s_standby"
+    }, {
+        "source": "s_standby",
+        "target": "s_working",
+        "trigger": "start_work",
+    }, {
+        "source": "s_working",
+        "target": "s_standby",
+        "trigger": "abort",
+        "effect": "stop_timer('work_timer')"
+    }, {
+        "source": "s_working",
+        "target": "s_meeting_notify",
+        "trigger": "work_timer",
+        "effect": "set_flag('WAITING')"
+    }, {
+        "source": "s_meeting_notify",
+        "target": "s_working",
+        "trigger": "dont_pause",
+    }, {
+        "source": "s_meeting_notify",
+        "target": "s_neg_connection",
+        "trigger": "accept_meeting",
+    }, {
+        "source": "s_neg_connection",
+        "target": "s_meeting", # TEMPORARY - should go to standby
+        "trigger": "timeout",
+    }, {
+        "source": "s_neg_connection",
+        "target": "s_meeting",
+        "trigger": "meeting_match",
+    }, 
+    {
+        "source": "s_meeting",
+        "target": "s_working",
+        "trigger": "meeting_timer",
+    },
+    ]
 
-class CustomNamespace(Namespace):
-    def __init__(self, kwargs):
-        super().__init__(kwargs)
-        self.n = 0
+ss = [{
+        "name": "s_standby",
+        "entry": "set_flag('STANDBY')"
+    }, {
+        "name": "s_working",
+        "entry": "set_flag('WORKING'); do_start_timer('work_timer')"
+    }, {
+        "name": "s_neg_connection",
+        "entry": "set_flag('SEARCHING'); do_start_timer('timeout')"
+    }, {
+        "name": "s_meeting",
+        "entry": "set_flag('MEETING'); do_start_timer('meeting_timer')"
+    }]
 
-    def on_connect(self, data):
-        print("user connected", data)
-        pass
+obj = StmpyObj()
+stm = Machine(transitions=ts, states=ss, obj=obj, name="stm")
+obj.stm = stm
 
-    def on_disconnect(self):
-        print("user disconnected")
-
-    def on_message(self, data):
-        print(data)
-        print(f"received message: {data}")
-        time.sleep(0.5)
-        self.n += 1
-        emit("message", '{"data": ' + f'"{self.n}"' + '}')
-        print(f"sent resp:")
-
-    #
-    #  STM HOME OFFICE STMPY
-    #
-
-    def on_start_timer_clicked(self, data):
-        pass
-
-    def on_abort_pause_timer(self):
-        pass
-
-    def on_meeting_connection_request(self, data):
-        pass
-
-
-
-# @socketio.on("message", namespace="/ws_test")
-# def handle_message(data):
-
-socketio.on_namespace(CustomNamespace("/ws_test"))
+driver = Driver()
+driver.add_machine(stm)
+driver.start()
 
 if __name__ == "__main__":
-    socketio.run(app, host="127.0.0.1", port=5000)
+    app.run(host="127.0.0.1", port=5000)
