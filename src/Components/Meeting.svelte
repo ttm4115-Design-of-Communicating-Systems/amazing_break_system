@@ -3,6 +3,8 @@
 	import axios from "axios";
 	import { io, Manager } from "socket.io-client";
 
+	export let fromHome
+
 	let localVideo = null;
 	let remoteVideo = null;
 	let res = ""
@@ -123,27 +125,31 @@
 			pc.close();
 			pc = null;
 		}
-		localStream.getTracks().forEach(track => track.stop());
+		createPeerConnection()
 	};
 
 	function send_hangup() {
 		console.log("Hangup", remoteId);
-		localStream.getTracks().forEach(track => track.stop());
 		signSocket.emit("message", JSON.stringify({type: "leave", name: remoteId}));
+		hangup();
 	}
 
 	setup_signaling();
 </script>
 <main>
-	<h1> video test </h1>
-	<h3>UUID: {uid}</h3>
-	<button on:click={signaling_test}>start signaling test</button>
-	<input bind:value={remoteId} placeholder="enter remote id">
+	{#if fromHome}
+		<h1> Break </h1>
+		<button on:click={signaling_test}>join meeting</button>
+	{:else}
+		<h3>UUID: {uid}</h3>
+	{/if}
 	<div>
 		<video bind:this={localVideo} />
 		<video bind:this={remoteVideo} />
 	</div>
-	<button on:click={send_hangup}>hangup</button>
+	{#if fromHome}
+		<button on:click={send_hangup}>leave meeting</button>
+	{/if}
 </main>
 
 <style>

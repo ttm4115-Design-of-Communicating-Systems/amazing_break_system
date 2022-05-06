@@ -20,7 +20,7 @@
 {#if $url.hash === '' || $url.hash === '#/'}
 	<Home backend={backend} status={status} signalingBackend={signalingBackend}/>
 {:else if $url.hash === '#/office'}
-	<Office backend={backend} status={status} signalingBackend={signalingBackend}/>
+	<Office backend={backend} status={status} signalingBackend={signalingBackend} fromHome={false}/>
 {:else}
 	<h1>404</h1>
 {/if}

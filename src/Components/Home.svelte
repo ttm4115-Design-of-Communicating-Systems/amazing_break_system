@@ -45,7 +45,6 @@
 </script>
 
 <main>
-  <h1>{state}</h1>
 
   {#if state == "STANDBY"}
     <nav>
@@ -75,7 +74,7 @@
     <p>Will time out after 5 seconds</p>
 
   {:else if state == "MEETING"}
-      <Meeting uid={uid} signalingBackend={signalingBackend}/>
+      <Meeting uid={uid} signalingBackend={signalingBackend} fromHome={true}/>
   {/if}
 </main>
 
